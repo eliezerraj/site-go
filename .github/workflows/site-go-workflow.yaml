@@ -89,4 +89,5 @@ jobs:
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "*.yaml" \
+            --exclude "*assets/*" \
             --delete
