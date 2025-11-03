@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Request with JWT</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* --- HEADER & FOOTER --- */
+    header, footer {
+      width: 100%;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    header img, footer img {
+      width: 100%;        /* fill the full horizontal space */
+      height: 150px;      /* fixed height, adjust as needed */
+      object-fit: fill;   /* allow distortion to fully cover the container */
+      display: block;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* --- MAIN CONTENT --- */
+    main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    #outputFrame {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 15px;
+      width: 100%;
+      height: 250px;
+      overflow: auto;
+      background: #f9f9f9;
+      white-space: pre-wrap;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: monospace;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      background-color: #0078d4;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    /* --- RESPONSIVE BEHAVIOR FOR SMALL SCREENS --- */
+    @media (max-width: 600px) {
+      header img, footer img {
+        height: 100px;   /* reduce height on small screens */
+      }
+      #outputFrame {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <img src="img/header.png" alt="Header Image">
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <h2>API Request with JWT</h2>
+
+    <label>HTTP Method:</label>
+    <select id="method">
+      <option value="GET">GET</option>
+      <option value="POST">POST</option>
+    </select>
+
+    <label>Endpoint URL:</label>
+    <input type="text" id="endpoint" value="http://localhost:5000/get/ACC-500">
+
+    <label>JWT Token:</label>
+    <input type="text" id="jwt" placeholder="Enter your JWT token here">
+
+    <label>JSON Payload (for POST requests):</label>
+    <textarea id="payload" rows="6" placeholder='{"account_id": "ACC-5001.1", "person_id": "P-5001.1", "tenant_id": "TENANT-1"}'></textarea>
+
+    <button onclick="fetchData()">Send Request</button>
+
+    <div id="outputFrame">Response will appear here...</div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <img src="img/footer.png" alt="Footer Image">
+  </footer>
+
+  <script>
+    async function fetchData() {
+      const method = document.getElementById("method").value;
+      const endpoint = document.getElementById("endpoint").value;
+      const jwt = document.getElementById("jwt").value;
+      const payload = document.getElementById("payload").value;
+      const outputFrame = document.getElementById("outputFrame");
+
+      outputFrame.textContent = "Loading...";
+
+      try {
+        const options = {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        if (jwt) {
+          options.headers["Authorization"] = `Bearer ${jwt}`;
+        }
+
+        if (method === "POST" && payload.trim() !== "") {
+          options.body = payload;
+        }
+
+        const response = await fetch(endpoint, options);
+        const contentType = response.headers.get("content-type");
+        let data;
+        if (contentType && contentType.includes("application/json")) {
+          data = JSON.stringify(await response.json(), null, 2);
+        } else {
+          data = await response.text();
+        }
+
+        outputFrame.textContent = data;
+      } catch (error) {
+        outputFrame.textContent = "Error: " + error.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
