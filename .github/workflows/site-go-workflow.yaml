@@ -13,11 +13,7 @@ on:
         description: 'AWS Region'
         required: true
         default: 'us-east-2'
-      BUCKET_NAME:
-        description: 'S3 Bucket Name'
-        required: true
-        default: '992382474575-eliezer-us-east-1-site-go' 
-        
+ 
 defaults:
   run:
     shell: bash
@@ -88,8 +84,8 @@ jobs:
 
       - name: Copy files to S3 website bucket
         run: |
-          echo "Uploading site content to s3://$BUCKET_NAME..."
-          aws s3 sync . s3://$BUCKET_NAME \
+          echo "Uploading site content to s3://${{ needs.setup-environment.outputs.BUCKET_NAME }}"
+          aws s3 sync . s3://${{ needs.setup-environment.outputs.BUCKET_NAME }} \
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude "*.yaml" \
