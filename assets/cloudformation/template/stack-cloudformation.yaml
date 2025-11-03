@@ -14,7 +14,7 @@ Parameters:
   S3BucketName:
     Description: Bucket Name
     Type: String
-    Default: 992382474575-eliezer-us-east-1-site-go
+    Default: 992382474575-eliezer-us-east-2-site-go
     
 Resources:
   S3Bucket:
