@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template create s3 bucket v 1.0 02/11/2025
+
+Parameters:
+  Versao:
+    Type: String
+    Default: 1.0
+  Env:
+    Type: String
+    AllowedValues:
+      - dev
+      - hml
+      - prd
+  S3BucketName:
+    Description: Bucket Name
+    Type: String
+    Default: 992382474575-eliezer-us-east-1-site-go
+    
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref S3BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'AES256'
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      VersioningConfiguration:
+        Status: Enabled
+
+      Tags:
+      - Key: env
+        Value: !Ref Env
+      - Key: stack
+        Value: !Sub ${AWS::StackName}
+      - Key: name
+        Value: !Join ['', [!Ref S3BucketName, "-Bucket"]]
+      - Key: resource
+        Value: bucket-s3
+
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Sub "${S3Bucket.Arn}/*"
+
+Outputs:
+  WebsiteURL:
+    Description: "URL for static website"
+    Value: !GetAtt S3Bucket.WebsiteURL
